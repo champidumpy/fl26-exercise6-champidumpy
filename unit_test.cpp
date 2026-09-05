@@ -7,7 +7,8 @@
                            // - do not modify catch.hpp
 #include <cassert>    
 #include <cstdlib>
-
+#include <map>
+#include <string>
 
 TEST_CASE("multimap unit test1", "[multimap]") {
 	std::multimap<std::string, std::string> m;
@@ -45,12 +46,21 @@ TEST_CASE("multimap unit test1", "[multimap]") {
 } 
 
 TEST_CASE("multimap unit test2", "[multimap]") {
-	std::multimap<std::string, std::string> m1;
+	std::multimap<std::string, int> m1;
 	m1.insert(std::make_pair("Ross", 10));
 	m1.insert(std::make_pair("Betsy", 20));
 	m1.insert(std::make_pair("Ross", 30));
 
-	std::multimap<std::string, std::string> m2;
+	REQUIRE(m1.size() == 3);
+	REQUIRE(m1.count("Ross") == 2);
+	REQUIRE(m1.count("Betsy") == 1);
+	REQUIRE(m1.count("Kanye") == 0);
+
+	REQUIRE(m1.find("Ross") != m1.end());
+	REQUIRE(m1.find("Betsy") != m1.end());
+	REQUIRE(m1.find("Kanye") == m1.end());
+
+	std::multimap<std::string, int> m2;
 
 	m2 = m1; 
 	REQUIRE(m2.size() == m1.size());
@@ -64,4 +74,34 @@ TEST_CASE("multimap unit test2", "[multimap]") {
 
 	REQUIRE(m2.size() == 4);
 	REQUIRE(m1.size() == 3); 
+}
+
+TEST_CASE("multimap unit test3", "[multimap]") {
+	std::multimap<int, std::string> m;
+	REQUIRE(m.empty() == true);
+	m.insert(std::make_pair(1, "One"));
+	m.insert(std::make_pair(2, "Two"));
+	m.insert(std::make_pair(2, "Two again"));
+
+	REQUIRE(m.size() == 3);
+	REQUIRE(m.empty() == false);
+
+	REQUIRE(m.count(1) == 1);
+	REQUIRE(m.count(2) == 2);
+	REQUIRE(m.count(3) == 0);
+
+	REQUIRE(m.find(1) != m.end());
+	REQUIRE(m.find(2) != m.end());
+	REQUIRE(m.find(3) == m.end());
+	
+
+	m.erase(2);
+
+	REQUIRE(m.size() == 1);
+	REQUIRE(m.count(2) == 0);
+
+	m.clear();
+
+	REQUIRE(m.empty() == true);
+	REQUIRE(m.size() == 0);
 }
